@@ -117,8 +117,9 @@ class CSVBasedFixedAssignmentOptionHandler(FixedAssignmentOptionHandler):
             for row in reader:
                 line += 1
                 try:
-                    address_str = row['address'].strip()
-                    address = address_str and IPv6Address(address_str) or None
+                    address_str = row['address'].strip().split(';')
+                    addresses = [IPv6Address(address) for address in address_str]
+                    logger.debug("Loaded addresses {!r}".format(addresses))
 
                     prefix_str = row['prefix'].strip()
                     prefix = prefix_str and IPv6Network(prefix_str) or None
@@ -168,7 +169,7 @@ class CSVBasedFixedAssignmentOptionHandler(FixedAssignmentOptionHandler):
 
                     # Store the normalised id
                     logger.debug("Loaded assignment for {}".format(row_id))
-                    yield row_id, Assignment(address=address, prefix=prefix)
+                    yield row_id, Assignment(address=addresses, prefix=prefix)
 
                 except KeyError:
                     raise configparser.Error("Assignment CSV must have columns 'id', 'address' and 'prefix'")

@@ -141,11 +141,11 @@ class FixedAssignmentOptionHandler(OptionHandler, metaclass=ABCMeta):
                 # Answer to this option
                 logger.info("Assigning {} to {!r}".format(assignment.address,
                                                           bundle.request.get_option_of_type(ClientIdOption).duid))
-                response_option = IANAOption(found_option.iaid, options=[
-                    IAAddressOption(address=assignment.address,
-                                    preferred_lifetime=self.address_preferred_lifetime,
-                                    valid_lifetime=self.address_valid_lifetime)
-                ])
+                options = [IAAddressOption(address=address,
+                                           preferred_lifetime=self.address_preferred_lifetime,
+                                           valid_lifetime=self.address_valid_lifetime) for address in
+                           assignment.address]
+                response_option = IANAOption(found_option.iaid, options=options)
                 bundle.response.options.append(response_option)
                 bundle.mark_handled(found_option)
 
